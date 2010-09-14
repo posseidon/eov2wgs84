@@ -1,0 +1,187 @@
+
+\title{ EOV - HD72 - WGS84}
+\author{
+	Zoltan Boncz - Binh Nguyen\\
+	\\
+	\underline{ELTE-Department of Computer Science}
+}
+\date{\today}
+
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+\usepackage{mathtools} 
+
+
+\begin{document}
+\newpage
+\maketitle
+
+\begin{abstract}
+	Intended for developers, who are using EOV-WGS84 conversion library. 
+	Some of the major steps and constants are defined in nutshell.
+\end{abstract}
+
+\newpage
+
+\section{Introduction}
+	Before getting to coding section, we would like to mention a few words on projection systems. Namely EOV, HD72 and WGS84.
+	
+\paragraph{EOV - Egységes Országos Vetületi rendszer}
+	A projection system used uniformly for Hungarian civilian base maps, in general, for spatial informatics.
+	Cylinder projection in traversal position. Established in 1972-1975.
+	
+\paragraph{HD72 - Hungarian Datum of 1972}
+	Hungarian Geodetic Reference System defines procedures for adjustment of the Hungarian Astrogeodetic Network, 
+	and on the IUGG GRS 1967 reference ellipsoid, as written for the deflections of vertical at the Laplace-points.
+\paragraph{WGS84 -World Geodetic System}
+	The World Geodetic System is a standard for use in cartography, geodesy, and navigation. 
+	It comprises a standard coordinate frame for the Earth, a standard spheroidal reference surface 
+	(the datum or reference ellipsoid) for raw altitude data, and a gravitational equipotential 
+	surface (the geoid) that defines the nominal sea level. It's latest revision is WGS84 last revised in 2004, which 
+	will be valid till 2010. Some of it's predecessors are:
+	\begin{itemize}
+		\item WGS 72
+		\item WGS 66
+		\item WGS 60
+	\end{itemize}
+
+\section{Environment}\label{previous work}
+	Conversion library is written in Ruby programming language. Math library is required for mathematical calculations.
+	Before using this library user should check if they have ruby and math lib on their running environment.
+	
+\section{EOV - Contants}\label{eov}
+	In this section we describe the results.
+	\subsection{Reference surface}
+	Let \\
+	$$ a = 6 378 160.000 m $$
+	$$ b = 6 356 774.516 m $$
+	\\
+	Ellipsodial Geographic Coordinates are: $\Phi$ and $\Lambda$
+	
+	\subsection{Projecting sphere}
+	A Gauss-sphere fitted to reference ellipsoid at the normal parallel.
+	\\
+	It is used for Gauss-sphere:
+	It's radius $R = 6 379 743.001 m$ and and its spherical geographic coordinates:
+	\\
+	$\phi$ and $\lambda$
+	
+	\subsection{Normal parallel}
+	Defined as average of latitudes for Hungary, with ellipsoidal and spherical latitudes below
+	\\
+	$\Phi_n = 47.10'00.0000"$
+	$\phi_n = 47.07'20.0578"$
+	
+	\subsection{Origin of geographic coordinates}
+	The Equator and the Greenwich meridian
+	
+	\subsection{Origin of projection}
+	A point on the meridian of site Gellérthegy:
+	\\
+	$\phi_0 = 47.06'00"$
+	$\lambda_0 = 0.0'0"$
+	\\
+	The plane coordinates are:
+	\begin{itemize}
+		\item $x_0 = 0.0 m$
+		\item $y_0 = 0.0 m$
+	\end{itemize}
+	and by computing the ellipsoidal geographic coordinates:
+	\\
+	$\Phi_0 = 47.08'39.8174"$
+	\\
+	$\Lambda_0 = 19.02'54.8584"$
+
+	\subsection{Displacement}
+	Origin of the EOV plane coordinates is moved to South-West with respect to origin of projection 
+	such that all possible EOV coordinates be positive for Hungary:
+	\\
+	$X_{EOV} = x + 200 000.000 m$ \\
+	$Y_{EOV} = y + x + 200 000.000 m$ \\
+	where x and y are the original coordinates in EOV projection system.
+	
+	\subsection{Scale factor}
+	Factor $m_0 = 0.99993$
+	
+	\subsection{Linear Distortion}
+	Along the y axis: $-7cm/km$ \\
+	North of Hungary: $+26cm/km$ \\
+	South of Hungary: $+23cm/km$
+	
+	\subsection{Area Distortion}
+	Along the y axis: $-1.4 m2/ha$ \\
+	North of Hungary: $+4.5 m2/ha$ \\
+	South of Hungary: $+4.5 m2/ha$
+	
+	
+	
+\section{HD72 - Contants}\label{hd72}
+	Our base ellipsoid is: \emph{GRS67 (IUHH 1967)}
+	\subsection{The Molodensky-Badekas type transformation parameters}
+	Direction of the transformation is HD72 $\gg$ WGS84 \\
+	\begin{center}
+		$d_x = +57.01$\\
+		$d_y = -69.97$\\
+		$d_z = -9.29$\\		
+	\end{center}
+	
+	\subsection{Errors for Molodensky-Badekas type of transformation}
+	\begin{itemize}
+		\item On average horizontal accuracy: $0.40$ meters.
+		\item Maximum horizontal error: $1.00$ meter.
+		\item Vertial accuracy: being optimized.
+	\end{itemize}
+	
+	\subsection{For GPS receivers}
+	In the User Datum function, the da and df parameters can be computed from the shape difference between
+	the GRS67 and the WGS84 ellipsoids and the shift parameters should be rounded to integers as follows:
+	\begin{itemize}
+		\item $d_x = +57$ meters.
+		\item $d_y = -70$ meters.
+		\item $d_z = -9$ meters.
+		\item $d_a = -23$ meters.
+		\item $df = -10^{-8}$ meters.
+	\end{itemize}
+	
+	\subsection{The Bursa-Wolf type transformation parameters}
+	Direction of the transformation: HD72 $\gg$ WGS84 \\
+	\begin{itemize}
+		\item $d_x = +52.684$ meters.
+		\item $d_y = -71.194$ meters.
+		\item $d_z = -13.975$ meters.
+		\item $e_x = +0.3120$ arc seconds.
+		\item $e_y = +0.1063$ arc seconds.
+		\item $e_z = +0.3729$ arc seconds.
+		\item $k = +1.0191$ ppm
+		\item Rotation convention: Coordinate frame rotation (most GIS packages use this one).
+	\end{itemize}
+	
+	\subsection{Error for Bursa-Wolf type of transformation}
+	Average accuracies:
+	\begin{itemize}
+		\item Average horizontal accuracy: 0.19 meters.
+		\item Maximum horizontal error: 0.41 meters.
+		\item Vertical accuracy: optimized.
+	\end{itemize}
+	\emph{Notice:} Several 7-parameter sets can be defined with almost this accuracy, but take care of
+	the signs of the parameters and the rotation convention.
+	
+	\subsection{Bursa-Wolf Type}
+	In our case, Bursa-Wolf Type transformation have been implemented.
+
+\section{Usage - I/O}
+	Usage can be found in rdoc html documentation generated by rdoc.
+	
+	
+\section{References}
+	Thanks to TIMÁR GÁBOR (timar@ludens.elte.hu) associate professor, head of Geophysics and Space Science Department,
+	without his help and reference materials and sample application "bajnok.xls" aka "champion excel sheet",
+	we could not accomplish the conversion module.
+	
+	\emph{Homepage: http://sas2.elte.hu/tg/}
+
+\bibliographystyle{abbrv}
+\bibliography{main}
+
+\end{document}
